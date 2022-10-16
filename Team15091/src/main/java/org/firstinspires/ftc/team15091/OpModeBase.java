@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public abstract class OpModeBase extends LinearOpMode {
     final protected Robot robot = new Robot();
-    boolean a_pressed, b_pressed, x_pressed, y_pressed, lb_pressed, rb_pressed, dpad_pressed, back_pressed, guide_pressed;
+    public volatile boolean a_pressed, b_pressed, x_pressed, y_pressed, lb_pressed, rb_pressed, dpad_pressed, back_pressed, guide_pressed;
 
-    void gamepadUpdate() {
+    public final void gamepadUpdate() {
         a_pressed = gamepad1.a || gamepad2.a;
         b_pressed = gamepad1.b || gamepad2.b;
         x_pressed = gamepad1.x || gamepad2.x;

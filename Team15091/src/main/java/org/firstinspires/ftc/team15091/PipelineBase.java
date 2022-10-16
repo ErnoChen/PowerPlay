@@ -18,16 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PipelineBase extends OpenCvPipeline {
-    OpenCvWebcam webcam;
-    Mat frameTemp;
-    List<MatOfPoint> contoursList = new ArrayList<>();
-    final Scalar RED = new Scalar(255, 0, 0);
-    final Scalar BLUE = new Scalar(0, 0, 255);
-    final Scalar GREEN = new Scalar(0, 255, 0);
-    final Scalar YELLOW = new Scalar(255, 255, 0);
-    static final Rect mask = new Rect(240, 170, 80, 100);
+    public OpenCvWebcam webcam;
+    public Mat frameTemp;
+    public List<MatOfPoint> contoursList = new ArrayList<>();
+    public final Scalar RED = new Scalar(255, 0, 0);
+    public final Scalar BLUE = new Scalar(0, 0, 255);
+    public final Scalar GREEN = new Scalar(0, 255, 0);
+    public final Scalar YELLOW = new Scalar(255, 255, 0);
+    public static final Rect mask = new Rect(240, 170, 80, 100);
 
-    static boolean isInside(MatOfPoint cont) {
+    public static boolean isInside(MatOfPoint cont) {
         Point[] contourPoints = cont.toArray();
         for (Point p : contourPoints) {
             if (!mask.contains(p)) {
@@ -37,7 +37,7 @@ public abstract class PipelineBase extends OpenCvPipeline {
         return true;
     }
 
-    void setupWebcam(HardwareMap hardwareMap) {
+    public final void setupWebcam(HardwareMap hardwareMap) {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
