@@ -32,6 +32,7 @@ public class GamepadOpMode extends OpModeBase {
             robot.setDrivePower(pLeftFront, pLeftRear, pRightFront, pRightRear);
 
             gamepadUpdate();
+
             telemetry.addData("Motor", "LF: %.2f, RF: %.2f, LR: %.2f, RR: %.2f",
                     robot.leftFront.getVelocity(),
                     robot.rightFront.getVelocity(),

@@ -38,7 +38,7 @@ public abstract class PipelineBase extends OpenCvPipeline {
         }
         return true;
     }
-
+	
     public final void setupWebcam(HardwareMap hardwareMap) {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
