@@ -1,7 +1,9 @@
-package org.firstinspires.ftc.team15091;
+package org.firstinspires.ftc.team15091.samples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
+import org.firstinspires.ftc.team15091.AutonomousBase;
 
 @Autonomous(name = "Dice Reader", group = "Sample", preselectTeleOp="Gamepad")
 @Disabled

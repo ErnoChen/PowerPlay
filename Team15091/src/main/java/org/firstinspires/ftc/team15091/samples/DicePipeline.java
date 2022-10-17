@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.team15091;
+package org.firstinspires.ftc.team15091.samples;
 
+import org.firstinspires.ftc.team15091.PipelineBase;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
