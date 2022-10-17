@@ -25,6 +25,7 @@ public abstract class PipelineBase extends OpenCvPipeline {
     public final Scalar BLUE = new Scalar(0, 0, 255);
     public final Scalar GREEN = new Scalar(0, 255, 0);
     public final Scalar YELLOW = new Scalar(255, 255, 0);
+    public final Scalar BLACK = new Scalar(0, 0, 0);
     public static final Rect mask = new Rect(240, 170, 80, 100);
 
     public static boolean isInside(MatOfPoint cont) {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team15091.samples;
+package org.firstinspires.ftc.team15091.examples;
 
 import org.firstinspires.ftc.team15091.PipelineBase;
 import org.opencv.core.Mat;
