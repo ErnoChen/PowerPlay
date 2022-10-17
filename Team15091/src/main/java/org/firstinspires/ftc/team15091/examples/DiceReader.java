@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team15091.samples;
+package org.firstinspires.ftc.team15091.examples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
