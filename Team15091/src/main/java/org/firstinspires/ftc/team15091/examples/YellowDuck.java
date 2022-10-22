@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.team15091.AutonomousBase;
 
-@Autonomous(name = "Yellow Duck", group = "Sample", preselectTeleOp="Gamepad")
+@Autonomous(name = "Yellow Duck", group = "Example", preselectTeleOp="Gamepad")
 @Disabled
 public class YellowDuck extends AutonomousBase {
     YellowDuckPipeline pipeline;

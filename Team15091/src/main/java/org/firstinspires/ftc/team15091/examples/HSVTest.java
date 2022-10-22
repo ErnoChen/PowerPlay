@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.team15091.AutonomousBase;
 
-@Autonomous(name = "HSV Test", group = "Sample", preselectTeleOp="Gamepad")
+@Autonomous(name = "HSV Test", group = "Example", preselectTeleOp="Gamepad")
 public class HSVTest extends AutonomousBase {
     HSVPipeline pipeline;
 

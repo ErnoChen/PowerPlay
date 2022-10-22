@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.util.Range;
 
 public class RobotDriver {
     /* Declare OpMode members. */
-    private Robot _robot;
-    private ElapsedTime _runtime = new ElapsedTime();
-    private LinearOpMode _opMode;
+    private final Robot _robot;
+    private final ElapsedTime _runtime = new ElapsedTime();
+    private final LinearOpMode _opMode;
 
     private static final double P_TURN_COEFF = 0.05d;     // Larger is more responsive, but also less stable
     private static final double P_DRIVE_COEFF = 0.09d;     // Larger is more responsive, but also less stable
@@ -158,7 +158,7 @@ public class RobotDriver {
         error = getError(angle);
 
         if (Math.abs(error) <= HEADING_THRESHOLD) {
-            steer = 0.0;
+            steer = 0d;
             speedLeftFront = speedLeftRear = speedRightFront = speedRightRear = 0.0;
             onTarget = true;
         } else {

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.team15091.AutonomousBase;
 
-@Autonomous(name = "Dice Reader", group = "Sample", preselectTeleOp="Gamepad")
+@Autonomous(name = "Dice Reader", group = "Example", preselectTeleOp="Gamepad")
 @Disabled
 public class DiceReader extends AutonomousBase {
     DicePipeline pipeline;
