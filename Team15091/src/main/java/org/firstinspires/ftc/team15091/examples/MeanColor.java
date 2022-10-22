@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.team15091.examples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.team15091.AutonomousBase;
 
-@Autonomous(name = "Mean Color", group = "Sample", preselectTeleOp="Gamepad")
+@Autonomous(name = "Mean Color", group = "Example", preselectTeleOp="Gamepad")
+@Disabled
 public class MeanColor extends AutonomousBase {
     MeanColorPipeline pipeline;
     @Override

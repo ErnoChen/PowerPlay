@@ -8,6 +8,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -21,12 +22,12 @@ public abstract class PipelineBase extends OpenCvPipeline {
     public OpenCvWebcam webcam;
     public Mat frameTemp;
     public List<MatOfPoint> contoursList = new ArrayList<>();
-    public final Scalar RED = new Scalar(255, 0, 0);
-    public final Scalar BLUE = new Scalar(0, 0, 255);
-    public final Scalar GREEN = new Scalar(0, 255, 0);
-    public final Scalar YELLOW = new Scalar(255, 255, 0);
-    public final Scalar BLACK = new Scalar(0, 0, 0);
-    public static final Rect mask = new Rect(240, 170, 80, 100);
+    public static final Scalar RED = new Scalar(255, 0, 0);
+    public static final Scalar BLUE = new Scalar(0, 0, 255);
+    public static final Scalar GREEN = new Scalar(0, 255, 0);
+    public static final Scalar YELLOW = new Scalar(255, 255, 0);
+    public static final Scalar BLACK = new Scalar(0, 0, 0);
+    public static final Rect mask = new Rect((640 - 80) / 2, (480 - 100) / 2, 80, 100);
 
     public static boolean isInside(MatOfPoint cont) {
         Point[] contourPoints = cont.toArray();

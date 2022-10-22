@@ -11,16 +11,17 @@ import org.opencv.imgproc.Imgproc;
 
 public class MeanColorPipeline extends PipelineBase {
     String data = "";
-    Rect mask = new Rect(255, 195, 50, 50);
+    Rect mask = new Rect((640 - 50) / 2, (480 - 50) / 2, 50, 50);
+
     @Override
     public Mat processFrame(Mat input) {
         // draw RBG boxes for reference only
-        Imgproc.rectangle(input, new Rect(0,0,50,50), RED, -1);
-        Imgproc.rectangle(input, new Rect(50,0,50,50), GREEN, -1);
-        Imgproc.rectangle(input, new Rect(100,0,50,50), BLUE, -1);
+        Imgproc.rectangle(input, new Rect(0, 0, 50, 50), RED, -1);
+        Imgproc.rectangle(input, new Rect(50, 0, 50, 50), GREEN, -1);
+        Imgproc.rectangle(input, new Rect(100, 0, 50, 50), BLUE, -1);
 
         frameTemp = new Mat(input, mask);
-        Imgproc.GaussianBlur(frameTemp, frameTemp, new Size(45,45), 0);
+        Imgproc.GaussianBlur(frameTemp, frameTemp, new Size(45, 45), 0);
         Scalar meanColor = Core.mean(frameTemp);
 
         if (meanColor.val[0] > 150d) {
@@ -41,7 +42,7 @@ public class MeanColorPipeline extends PipelineBase {
         Imgproc.rectangle(input, new Rect(150, 0, 200, 50), BLACK, -1);
         Imgproc.putText(input,
                 String.format("%3.0f,%3.0f,%3.0f", meanColor.val[0], meanColor.val[1], meanColor.val[2]),
-                new Point(155,35),
+                new Point(155, 35),
                 Imgproc.FONT_HERSHEY_SIMPLEX,
                 1,
                 YELLOW,

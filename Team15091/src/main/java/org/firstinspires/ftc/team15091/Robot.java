@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Robot {
-    DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    public DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
 
     private BNO055IMU imu;
@@ -36,7 +36,7 @@ public class Robot {
     private int[] beepSoundID = new int[2];
 
     private static final double COUNTS_PER_MOTOR_REV = 560d;    // eg: HD Hex Motor 20:1 560, core hex 288, 40:1 1120
-    private static final double DRIVE_GEAR_REDUCTION = 15d/10d;     // This is < 1.0 if geared UP, eg. 26d/10d
+    private static final double DRIVE_GEAR_REDUCTION = 15d / 10d;     // This is < 1.0 if geared UP, eg. 26d/10d
     private static final double WHEEL_DIAMETER_INCHES = 2.953d;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.14159265359d);
@@ -97,7 +97,7 @@ public class Robot {
         }
     }
 
-    void setDrivePower(double pLeftFront, double pLeftRear, double pRightFront, double pRightRear) {
+    public void setDrivePower(double pLeftFront, double pLeftRear, double pRightFront, double pRightRear) {
         leftFront.setPower(pLeftFront);
         leftRear.setPower(pLeftRear);
         rightFront.setPower(pRightFront);
@@ -153,15 +153,13 @@ public class Robot {
         rightRear.setTargetPosition(rightRearTarget);
     }
 
-    final void beep() {
+    public final void beep() {
         beep(0);
     }
 
     final void beep(int beepType) {
-        new Thread() {
-            public void run() {
-                SoundPlayer.getInstance().startPlaying(_appContext, beepSoundID[beepType]);
-            }
-        }.start();
+        new Thread(() ->
+                SoundPlayer.getInstance().startPlaying(_appContext, beepSoundID[beepType])
+        ).start();
     }
 }
