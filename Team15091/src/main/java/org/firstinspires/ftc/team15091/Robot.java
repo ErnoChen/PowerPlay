@@ -6,6 +6,7 @@ import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
@@ -27,6 +28,8 @@ import java.util.List;
 
 public class Robot {
     public DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    public DcMotor armMotor;
+    public Servo grabberServo;
     private List<DcMotorEx> motors;
 
     private BNO055IMU imu;
@@ -46,13 +49,15 @@ public class Robot {
         leftRear = hardwareMap.get(DcMotorEx.class, "left_rear");
         rightFront = hardwareMap.get(DcMotorEx.class, "right_front");
         rightRear = hardwareMap.get(DcMotorEx.class, "right_rear");
+        armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
+        grabberServo = hardwareMap.get(Servo.class, "grabber_servo");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
-        leftFront.setDirection(Direction.FORWARD);
-        leftRear.setDirection(Direction.FORWARD);
-        rightFront.setDirection(Direction.REVERSE);
-        rightRear.setDirection(Direction.REVERSE);
+        leftFront.setDirection(Direction.REVERSE);
+        leftRear.setDirection(Direction.REVERSE);
+        rightFront.setDirection(Direction.FORWARD);
+        rightRear.setDirection(Direction.FORWARD);
 
         setDriveZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
 
@@ -137,8 +142,8 @@ public class Robot {
         int moveCounts = (int) (distance * COUNTS_PER_INCH);
 
         int dirFL = moveSideway ? -1 : 1;
-        int dirFR = moveSideway ? 1 : 1;
-        int dirRL = moveSideway ? 1 : 1;
+        int dirFR = 1;
+        int dirRL = 1;
         int dirRR = moveSideway ? -1 : 1;
 
         int leftFrontTarget = leftFront.getCurrentPosition() + moveCounts * dirFL;

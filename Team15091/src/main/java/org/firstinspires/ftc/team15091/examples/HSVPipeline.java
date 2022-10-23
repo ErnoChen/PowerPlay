@@ -10,7 +10,8 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class HSVPipeline extends PipelineBase {
-    double data = 0d;
+    public double data = 0d;
+    public int colour; // 0 = cyan, 1 = magenta, 2 = yellow
 
     @Override
     public Mat processFrame(Mat input) {
@@ -36,6 +37,15 @@ public class HSVPipeline extends PipelineBase {
                 1,
                 YELLOW,
                 2);
+        if (data >= 0 && data < 60) {
+            colour = 0;
+        }
+        else if (data >= 60 && data < 120) {
+            colour = 1;
+        }
+        else {
+            colour = 2;
+        }
 
         return input;
     }
