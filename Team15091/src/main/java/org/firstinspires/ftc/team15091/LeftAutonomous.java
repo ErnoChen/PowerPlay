@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team15091;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team15091.examples.HSVPipeline;
 
@@ -13,6 +14,24 @@ public class LeftAutonomous extends AutonomousBase{
     DcMotor armMotor;
     Servo grabberServo;
     int stored_colour;
+    int highPolePos = 3000, mediumPolePos = 2000, lowPolePos = 1000, junctionPos = 500;
+    Thread armUp = new Thread() {
+        public void run() {
+            armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            armMotor.setTargetPosition(highPolePos);
+            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            armMotor.setPower(1);
+        }
+    };
+    Thread armDown = new Thread() {
+        public void run() {
+            armMotor.setTargetPosition(0);
+            armMotor.setPower(1);
+            grabberServo.setPosition(0);
+        }
+    };
+    ElapsedTime runtime = new ElapsedTime();
     @Override
     public void runOpMode() throws InterruptedException {
         armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
@@ -27,15 +46,41 @@ public class LeftAutonomous extends AutonomousBase{
         // Abort this loop is started or stopped.
         setupAndWait();
         stored_colour = pipeline.colour;
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setTargetPosition(1000);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(1);
-        robotDriver.gyroSlide(0.5d, 10, 0, 3, null);
-        robotDriver.gyroDrive(0.5d, 10, 0, 3, null);
+        runtime.reset();
+        armUp.start();
+        robotDriver.gyroSlide(1, 20, 180, 5, null);
+        robotDriver.gyroTurn(1, -45, 3);
+        robotDriver.gyroDrive(0.5, 1, 0, 3, null);
         grabberServo.setPosition(1);
-        sleep(1000);
+        while (runtime.seconds() < 20) { // note: once timer has hit 20 seconds, will finish current loop first
+            sleep(200);
+            armDown.start();
+            robotDriver.gyroDrive(0.5, 1, 180, 3, null);
+            robotDriver.gyroTurn(1, 45, 3);
+            robotDriver.gyroSlide(1, 15, 0, 5, null);
+            robotDriver.gyroTurn(1, 45, 3);
+            robotDriver.gyroDrive(0.5, 10, 0, 3, null);
+            grabberServo.setPosition(1);
+            robotDriver.gyroDrive(0.5, 10, 180, 3, null);
+            armUp.start();
+            robotDriver.gyroTurn(1, -45, 3);
+            robotDriver.gyroSlide(1, 15, 180, 3, null);
+            robotDriver.gyroTurn(1, -45, 3);
+            robotDriver.gyroDrive(0.5, 1, 0, 3, null);
+            grabberServo.setPosition(1);
+        }
+        armDown.start();
+        robotDriver.gyroDrive(0.5, 1, 180, 3, null);
+        if (stored_colour == 1) {
+            robotDriver.gyroTurn(1, 45, 3);
+            robotDriver.gyroDrive(1, 10, 180, 3, null); // TODO: add object detector for wall
+        }
+        else if (stored_colour == 2) { // we're already in the parking zone, no need to do anything
 
+        }
+        else {
+            robotDriver.gyroTurn(1, 45, 3);
+            robotDriver.gyroDrive(1, 10, 0, 3, null);
+        }
     }
 }
