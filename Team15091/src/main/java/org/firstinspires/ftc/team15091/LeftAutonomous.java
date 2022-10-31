@@ -49,33 +49,33 @@ public class LeftAutonomous extends AutonomousBase{
         runtime.reset();
         armUp.start();
         robotDriver.gyroSlide(1, 20, 180, 5, null);
-        robotDriver.gyroTurn(1, -45, 3);
+        robotDriver.gyroTurn(1, 45, 3);
         robotDriver.gyroDrive(0.5, 1, 0, 3, null);
         grabberServo.setPosition(1);
         while (runtime.seconds() < 20) { // note: once timer has hit 20 seconds, will finish current loop first
             sleep(200);
             armDown.start();
             robotDriver.gyroDrive(0.5, 1, 180, 3, null);
-            robotDriver.gyroTurn(1, 45, 3);
+            robotDriver.gyroTurn(1, -45, 3);
             robotDriver.gyroSlide(1, 15, 0, 5, null);
-            robotDriver.gyroTurn(1, 45, 3);
+            robotDriver.gyroTurn(1, -45, 3);
             robotDriver.gyroDrive(0.5, 10, 0, 3, null);
             grabberServo.setPosition(1);
             robotDriver.gyroDrive(0.5, 10, 180, 3, null);
             armUp.start();
-            robotDriver.gyroTurn(1, -45, 3);
+            robotDriver.gyroTurn(1, 45, 3);
             robotDriver.gyroSlide(1, 15, 180, 3, null);
-            robotDriver.gyroTurn(1, -45, 3);
+            robotDriver.gyroTurn(1, 45, 3);
             robotDriver.gyroDrive(0.5, 1, 0, 3, null);
             grabberServo.setPosition(1);
         }
         armDown.start();
         robotDriver.gyroDrive(0.5, 1, 180, 3, null);
-        if (stored_colour == 1) {
-            robotDriver.gyroTurn(1, 45, 3);
+        if (stored_colour == 0) {
+            robotDriver.gyroTurn(1, -45, 3);
             robotDriver.gyroDrive(1, 10, 180, 3, null); // TODO: add object detector for wall
         }
-        else if (stored_colour == 2) { // we're already in the parking zone, no need to do anything
+        else if (stored_colour == 1)     { // we're already in the parking zone, no need to do anything
 
         }
         else {

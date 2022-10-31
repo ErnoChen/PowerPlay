@@ -67,11 +67,26 @@ public class GamepadOpMode extends OpModeBase {
             }
 
             if (gamepad1.a && !listeningForButtonPress) {
-                robot.grabberServo.setPosition(0);
+                robot.grabberServo.setPosition(0); // 0 closes the claw
             }
             else if (gamepad1.b && !listeningForButtonPress) {
                 robot.grabberServo.setPosition(1);
             }
+
+            double pLeftFront = Range.clip(drive + turn + side, -1.0d, 1.0d);
+            double pLeftRear = Range.clip(drive + turn - side, -1.0d, 1.0d);
+            double pRightFront = Range.clip(drive - turn - side, -1.0d, 1.0d);
+            double pRightRear = Range.clip(drive - turn + side, -1.0d, 1.0d);
+
+            if (gamepad1.y && !listeningForButtonPress) {
+                pLeftFront /= 2;
+                pLeftRear /= 2;
+                pRightFront /= 2;
+                pRightRear /= 2;
+            }
+
+            // Send calculated power to wheels
+            robot.setDrivePower(pLeftFront, pLeftRear, pRightFront, pRightRear);
 
             if (listeningForButtonPress) {
                 if (gamepad1.b || gamepad1.x || gamepad1.y) {
@@ -90,15 +105,6 @@ public class GamepadOpMode extends OpModeBase {
                     listeningForButtonPress = false;
                 }
             }
-
-
-            double pLeftFront = Range.clip(drive + turn + side, -1.0d, 1.0d);
-            double pLeftRear = Range.clip(drive + turn - side, -1.0d, 1.0d);
-            double pRightFront = Range.clip(drive - turn - side, -1.0d, 1.0d);
-            double pRightRear = Range.clip(drive - turn + side, -1.0d, 1.0d);
-
-            // Send calculated power to wheels
-            robot.setDrivePower(pLeftFront, pLeftRear, pRightFront, pRightRear);
 
             gamepadUpdate();
 
