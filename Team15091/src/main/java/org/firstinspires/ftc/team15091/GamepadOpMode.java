@@ -2,18 +2,24 @@ package org.firstinspires.ftc.team15091;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @TeleOp(name = "Gamepad", group = "Linear Opmode")
 public class GamepadOpMode extends OpModeBase {
     @Override
     public void runOpMode() throws InterruptedException {
         boolean isEncoderReset = false, listeningForButtonPress = false;
-        int highPolePos = 3000, mediumPolePos = 2000, lowPolePos = 1000, junctionPos = 500;
+        int highPolePos = 11700, mediumPolePos = 8000, lowPolePos = 5000, junctionPos = 500;
         robot.init(hardwareMap, false);
+        robot.grabberServo.setPosition(1d);
 
         telemetry.addData(">", "Press Play to start op mode");
+        telemetry.addData("lift", () ->
+                String.format("pos: %d, cur: %.2fA",
+                        robot.armMotor.getCurrentPosition(),
+                        robot.armMotor.getCurrent(CurrentUnit.AMPS)));
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -27,7 +33,7 @@ public class GamepadOpMode extends OpModeBase {
             if (gamepad1.start && !start_pressed) {
                 isEncoderReset = !isEncoderReset;
                 robot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
             if (gamepad1.left_trigger > 0.2) {
                 if (isEncoderReset) {
@@ -67,10 +73,10 @@ public class GamepadOpMode extends OpModeBase {
             }
 
             if (gamepad1.a && !listeningForButtonPress) {
-                robot.grabberServo.setPosition(0);
+                robot.setGrabber(0);
             }
             else if (gamepad1.b && !listeningForButtonPress) {
-                robot.grabberServo.setPosition(1);
+                robot.setGrabber(1);
             }
 
             if (listeningForButtonPress) {

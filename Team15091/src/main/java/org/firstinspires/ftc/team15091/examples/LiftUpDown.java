@@ -4,7 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.MotorControlAlgorithm;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.team15091.OpModeBase;
 
 @TeleOp(name = "Lift Test", group = "Example")
@@ -18,9 +21,21 @@ public class LiftUpDown extends OpModeBase {
         liftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        liftMotor.setCurrentAlert(1d, CurrentUnit.AMPS);
+        liftMotor.setPositionPIDFCoefficients(5d);
+        liftMotor.setTargetPositionTolerance(2);
 
         telemetry.addData(">", "Press Play to start op mode");
-        telemetry.addData("lift", () -> String.format("pos: %d", liftMotor.getCurrentPosition()));
+        telemetry.addData("target", String.format("tol: %d",
+                        liftMotor.getTargetPositionTolerance()));
+        telemetry.addData("pidf",
+                liftMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION).toString());
+        telemetry.addData("over current",
+                String.format("%.2f", liftMotor.getCurrentAlert(CurrentUnit.AMPS)));
+        telemetry.addData("lift", () ->
+                String.format("pos: %d, cur: %.2fA",
+                        liftMotor.getCurrentPosition(),
+                        liftMotor.getCurrent(CurrentUnit.AMPS)));
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
