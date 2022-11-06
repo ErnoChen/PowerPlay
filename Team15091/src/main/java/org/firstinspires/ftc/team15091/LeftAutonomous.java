@@ -41,13 +41,14 @@ public class LeftAutonomous extends AutonomousBase{
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Analysis", () -> String.format("%d", pipeline.colour));
+        telemetry.addData("Angle", () -> String.format("%.1f", robot.getHeading()));
 
         // Wait for the game to start (driver presses PLAY)
         // Abort this loop is started or stopped.
         setupAndWait();
         stored_colour = pipeline.colour;
         runtime.reset();
-        armUp.start();
+        /*armUp.start();
         robotDriver.gyroSlide(1, 20, 180, 5, null);
         robotDriver.gyroTurn(1, -45, 3);
         robotDriver.gyroDrive(0.5, 1, 0, 3, null);
@@ -70,17 +71,18 @@ public class LeftAutonomous extends AutonomousBase{
             grabberServo.setPosition(1);
         }
         armDown.start();
-        robotDriver.gyroDrive(0.5, 1, 180, 3, null);
+        robotDriver.gyroDrive(0.5, 1, 180, 3, null);*/
         if (stored_colour == 1) {
-            robotDriver.gyroTurn(1, 45, 3);
-            robotDriver.gyroDrive(1, 10, 180, 3, null); // TODO: add object detector for wall
+            robotDriver.gyroSlide(1, 24, 0, 3, null);
+            //robotDriver.gyroDrive(1, 10, 180, 3, null); // TODO: add object detector for wall
         }
         else if (stored_colour == 2) { // we're already in the parking zone, no need to do anything
 
         }
         else {
-            robotDriver.gyroTurn(1, 45, 3);
-            robotDriver.gyroDrive(1, 10, 0, 3, null);
+            robotDriver.gyroSlide(1, -24, 0, 3, null);
+            //robotDriver.gyroDrive(1, 10, 0, 3, null);
         }
+        robotDriver.gyroDrive(1, 36, 1, 2, null);
     }
 }

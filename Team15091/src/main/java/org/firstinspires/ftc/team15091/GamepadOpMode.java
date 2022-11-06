@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team15091;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -11,9 +12,9 @@ public class GamepadOpMode extends OpModeBase {
     @Override
     public void runOpMode() throws InterruptedException {
         boolean isEncoderReset = false, listeningForButtonPress = false;
-        int highPolePos = 11700, mediumPolePos = 8000, lowPolePos = 5000, junctionPos = 500;
+        ElapsedTime runtime = new ElapsedTime();
+        int highPolePos = 11700, mediumPolePos = 8000, lowPolePos = 5000, junctionPos = 1000;
         robot.init(hardwareMap, false);
-        robot.grabberServo.setPosition(1d);
 
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.addData("lift", () ->
@@ -55,28 +56,28 @@ public class GamepadOpMode extends OpModeBase {
                     robot.armMotor.setPower(gamepad1.right_trigger);
                 }
             }
-            else {
+            else if (left_trigger > 0.2 || right_trigger > 0.2) {
                 robot.armMotor.setPower(0);
             }
             if (gamepad1.left_bumper && !lb_pressed) {
-                resetRuntime();
+                runtime.reset();
                 listeningForButtonPress = true;
                 robot.armMotor.setTargetPosition(highPolePos);
                 robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.armMotor.setPower(1);
             }
             else if (gamepad1.right_bumper && !rb_pressed) {
-                resetRuntime();
+                runtime.reset();
                 robot.armMotor.setTargetPosition(0);
                 robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.armMotor.setPower(1);
             }
 
-            if (gamepad1.a && !listeningForButtonPress) {
-                robot.setGrabber(0);
-            }
-            else if (gamepad1.b && !listeningForButtonPress) {
+            if (gamepad1.a) {
                 robot.setGrabber(1);
+            }
+            else if (gamepad1.b && !listeningForButtonPress && !b_pressed) {
+                robot.setGrabber(0);
             }
 
             if (listeningForButtonPress) {
@@ -85,14 +86,16 @@ public class GamepadOpMode extends OpModeBase {
                     if (gamepad1.b) {
                         robot.armMotor.setTargetPosition(lowPolePos);
                     }
-                    else if (gamepad1.x) {
+                    else if (gamepad1.y) {
                         robot.armMotor.setTargetPosition(mediumPolePos);
                     }
-                    else if (gamepad1.y) {
+                    else if (gamepad1.x) {
                         robot.armMotor.setTargetPosition(junctionPos);
                     }
+                    robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    robot.armMotor.setPower(1);
                 }
-                if (getRuntime() > 500) {
+                if (runtime.milliseconds() > 500) {
                     listeningForButtonPress = false;
                 }
             }

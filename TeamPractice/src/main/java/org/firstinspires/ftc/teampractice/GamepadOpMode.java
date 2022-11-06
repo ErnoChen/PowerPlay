@@ -12,14 +12,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @TeleOp(name="Gamepad")
 public class GamepadOpMode extends LinearOpMode {
-    static volatile boolean dpad_down_pressed = false;
+    static volatile boolean back_pressed, left_bumper_pressed = false, right_bumper_pressed = false;
     static volatile boolean a_pressed = false;
     static volatile boolean b_pressed = false;
-
+    static volatile int cp;
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot();
         robot.init(hardwareMap, false);
+        int[] armStops = new int[]{0, 500, 820, 1160};
+        int i = 0;
 
         LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
 
@@ -38,6 +40,8 @@ public class GamepadOpMode extends LinearOpMode {
                 String.format("pos: %d, cur: %.2fA",
                         robot.armMotor.getCurrentPosition(),
                         robot.armMotor.getCurrent(CurrentUnit.AMPS)));
+        telemetry.addData("power", () ->
+                String.format("%.2f", robot.armMotor.getPower()));
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -46,26 +50,39 @@ public class GamepadOpMode extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             if (gamepad1.left_trigger > 0d) {
-                robot.armMotor.setTargetPosition(1950);
+                robot.armMotor.setTargetPosition(1250);
                 robot.setArmMode(DcMotorEx.RunMode.RUN_TO_POSITION);
                 robot.armMotor.setPower(gamepad1.left_trigger);
+                cp = robot.armMotor.getCurrentPosition();
             } else if (gamepad1.right_trigger > 0d) {
                 robot.armMotor.setTargetPosition(0);
                 robot.setArmMode(DcMotorEx.RunMode.RUN_TO_POSITION);
                 robot.armMotor.setPower(gamepad1.right_trigger);
+                cp = robot.armMotor.getCurrentPosition();
             } else {
-                if (gamepad1.dpad_up) {
+                if (gamepad1.back) {
                     robot.setArmMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                    robot.armMotor.setPower(0.3d);
-                } else if (gamepad1.dpad_down) {
-                    robot.setArmMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                    robot.armMotor.setPower(-0.3d);
+                    robot.armMotor.setPower(-0.4d);
                 } else {
-                    robot.armMotor.setPower(0d);
+                    robot.armMotor.setTargetPosition(cp);
+                    robot.setArmMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+                    robot.armMotor.setPower(1d);
                 }
             }
 
-            if (dpad_down_pressed && !gamepad1.dpad_down) {
+            if (gamepad1.left_bumper && !left_bumper_pressed) {
+                if (i < 3) {
+                    i++;
+                    cp = armStops[i];
+                }
+            }
+
+            if (gamepad1.right_bumper && !right_bumper_pressed) {
+                i = 0;
+                cp = 0;
+            }
+
+            if (back_pressed && !gamepad1.back) {
                 try {
                     new LynxResetMotorEncoderCommand(controlHub, liftMotorPort).send();
                 } catch (LynxNackException e) {
@@ -91,7 +108,9 @@ public class GamepadOpMode extends LinearOpMode {
             // Send calculated power to wheels
             robot.setDrivePower(pLeftFront, pLeftRear, pRightFront, pRightRear);
 
-            dpad_down_pressed = gamepad1.dpad_down;
+            left_bumper_pressed = gamepad1.left_bumper;
+            right_bumper_pressed = gamepad1.right_bumper;
+            back_pressed = gamepad1.back;
             a_pressed = gamepad1.a;
             b_pressed = gamepad1.b;
 

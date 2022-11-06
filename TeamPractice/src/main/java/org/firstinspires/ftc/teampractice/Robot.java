@@ -36,7 +36,7 @@ public class Robot {
     private int[] beepSoundID = new int[2];
 
     private static final double COUNTS_PER_MOTOR_REV = 560d;    // eg: HD Hex Motor 20:1 560, core hex 288, 40:1 1120
-    private static final double DRIVE_GEAR_REDUCTION = 15d / 10d;     // This is < 1.0 if geared UP, eg. 26d/10d
+    private static final double DRIVE_GEAR_REDUCTION = 1d;     // This is < 1.0 if geared UP, eg. 26d/10d
     private static final double WHEEL_DIAMETER_INCHES = 2.953d;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.14159265359d);
@@ -55,8 +55,8 @@ public class Robot {
         armMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         armMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         armMotor.setCurrentAlert(1d, CurrentUnit.AMPS);
-        armMotor.setPositionPIDFCoefficients(5d);
-        armMotor.setTargetPositionTolerance(2);
+        armMotor.setPositionPIDFCoefficients(10d);
+        armMotor.setTargetPositionTolerance(5);
         armMode = DcMotorEx.RunMode.RUN_USING_ENCODER;
 
         grabberServo = hardwareMap.get(Servo.class, "grabber_servo");
