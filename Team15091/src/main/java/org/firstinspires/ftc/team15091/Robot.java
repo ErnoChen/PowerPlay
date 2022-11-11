@@ -32,6 +32,7 @@ public class Robot {
     public DcMotorEx armMotor;
     public Servo grabberServo;
     private List<DcMotorEx> motors;
+    public DigitalChannel limitSwitch;
 
     private BNO055IMU imu;
     private Context _appContext;
@@ -39,13 +40,14 @@ public class Robot {
     private static final double MAX_VELOCITY = 2800d;
     private int[] beepSoundID = new int[2];
 
-    private static final double COUNTS_PER_MOTOR_REV = 1120d;    // eg: HD Hex Motor 20:1 560, core hex 288, 40:1 1120
+    private static final double COUNTS_PER_MOTOR_REV = 560d;    // eg: HD Hex Motor 20:1 560, core hex 288, 40:1 1120
     private static final double DRIVE_GEAR_REDUCTION = 1d;     // This is < 1.0 if geared UP, eg. 26d/10d
     private static final double WHEEL_DIAMETER_INCHES = 2.953d;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.14159265359d);
 
     private static volatile double grabberPosition;
+    private RunMode armMode;
 
     public void init(HardwareMap hardwareMap, boolean initIMU) {
         leftFront = hardwareMap.get(DcMotorEx.class, "left_front");
@@ -53,17 +55,24 @@ public class Robot {
         rightFront = hardwareMap.get(DcMotorEx.class, "right_front");
         rightRear = hardwareMap.get(DcMotorEx.class, "right_rear");
         armMotor = hardwareMap.get(DcMotorEx.class, "arm_motor");
+        armMotor.setDirection(Direction.REVERSE);
         armMotor.setCurrentAlert(1d, CurrentUnit.AMPS);
         armMotor.setPositionPIDFCoefficients(5d);
+        armMotor.setTargetPositionTolerance(2);
+        armMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        setArmMode(RunMode.STOP_AND_RESET_ENCODER);
+
         grabberServo = hardwareMap.get(Servo.class, "grabber_servo");
         grabberPosition = grabberServo.getPosition();
 
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
+
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
-        leftFront.setDirection(Direction.REVERSE);
-        leftRear.setDirection(Direction.REVERSE);
-        rightFront.setDirection(Direction.FORWARD);
-        rightRear.setDirection(Direction.FORWARD);
+        leftFront.setDirection(Direction.FORWARD);
+        leftRear.setDirection(Direction.FORWARD);
+        rightFront.setDirection(Direction.REVERSE);
+        rightRear.setDirection(Direction.REVERSE);
 
         setDriveZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
 
@@ -174,10 +183,23 @@ public class Robot {
         ).start();
     }
 
+    /** set grabber servo position
+     * @param newPosition double 0: close, 1:open
+     */
     public void setGrabber(double newPosition) {
         if (grabberPosition != newPosition) {
             grabberServo.setPosition(newPosition);
             grabberPosition = newPosition;
+        }
+    }
+
+    /** set arm motor run mode
+     * @param newMode
+     */
+    public void setArmMode(DcMotor.RunMode newMode) {
+        if (armMode != newMode) {
+            armMotor.setMode(newMode);
+            armMode = newMode;
         }
     }
 }

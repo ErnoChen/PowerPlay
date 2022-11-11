@@ -4,8 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.MotorControlAlgorithm;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.team15091.OpModeBase;
@@ -16,8 +18,9 @@ public class LiftUpDown extends OpModeBase {
     public void runOpMode() throws InterruptedException {
         boolean dpad_down_pressed = false;
 
+        DigitalChannel limitSwitch  = hardwareMap.get(DigitalChannel.class, "limit_sensor");
         DcMotorEx liftMotor = hardwareMap.get(DcMotorEx.class, "arm_motor");
-        liftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -43,40 +46,26 @@ public class LiftUpDown extends OpModeBase {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            int currentPosition = liftMotor.getCurrentPosition();
             if (gamepad1.left_trigger > 0d) {
-                liftMotor.setTargetPosition(12000);
+                liftMotor.setTargetPosition(1950);
                 if (liftMotor.getMode() != DcMotorEx.RunMode.RUN_TO_POSITION) {
                     liftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
                 }
                 liftMotor.setPower(gamepad1.left_trigger);
-            } else if (gamepad1.right_trigger > 0d) {
-                liftMotor.setTargetPosition(0);
-                if (liftMotor.getMode() != DcMotorEx.RunMode.RUN_TO_POSITION) {
-                    liftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            } else if (gamepad1.right_trigger > 0d && limitSwitch.getState() == true) {
+                if (liftMotor.getMode() != DcMotorEx.RunMode.RUN_USING_ENCODER) {
+                    liftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
                 }
-                liftMotor.setPower(gamepad1.right_trigger);
+                double powerScale = currentPosition > 800 ? 1d : 0.4d;
+                liftMotor.setPower(-gamepad1.right_trigger * powerScale);
             } else {
-                if (gamepad1.dpad_up) {
-                    if (liftMotor.getMode() != DcMotorEx.RunMode.RUN_USING_ENCODER) {
-                        liftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                    }
-
-                    liftMotor.setPower(0.2d);
-                } else if (gamepad1.dpad_down) {
-                    if (liftMotor.getMode() != DcMotorEx.RunMode.RUN_USING_ENCODER) {
-                        liftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                    }
-                    liftMotor.setPower(-0.2d);
+                if (limitSwitch.getState() == false) {
+                    liftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                 } else {
                     liftMotor.setPower(0d);
                 }
             }
-
-            if (dpad_down_pressed == true && gamepad1.dpad_down == false) {
-                liftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            }
-
-            dpad_down_pressed = gamepad1.dpad_down;
 
             gamepadUpdate();
             telemetry.update();

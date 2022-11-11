@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -28,6 +29,8 @@ public class Robot {
     public DcMotorEx armMotor;
     public Servo grabberServo;
     private List<DcMotorEx> motors;
+    public DigitalChannel limitSwitch;  // Hardware Device Object
+
 
     private BNO055IMU imu;
     private Context _appContext;
@@ -35,7 +38,7 @@ public class Robot {
     private static final double MAX_VELOCITY = 2800d;
     private int[] beepSoundID = new int[2];
 
-    private static final double COUNTS_PER_MOTOR_REV = 560d;    // eg: HD Hex Motor 20:1 560, core hex 288, 40:1 1120
+    private static final double COUNTS_PER_MOTOR_REV = 1120d;    // eg: HD Hex Motor 20:1 560, core hex 288, 40:1 1120
     private static final double DRIVE_GEAR_REDUCTION = 1d;     // This is < 1.0 if geared UP, eg. 26d/10d
     private static final double WHEEL_DIAMETER_INCHES = 2.953d;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -50,23 +53,27 @@ public class Robot {
         rightFront = hardwareMap.get(DcMotorEx.class, "right_front");
         rightRear = hardwareMap.get(DcMotorEx.class, "right_rear");
         armMotor = hardwareMap.get(DcMotorEx.class, "arm_motor");
-        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        armMotor.setDirection(Direction.REVERSE);
+        setArmMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        setArmMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
         armMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         armMotor.setCurrentAlert(1d, CurrentUnit.AMPS);
-        armMotor.setPositionPIDFCoefficients(10d);
-        armMotor.setTargetPositionTolerance(5);
+        armMotor.setPositionPIDFCoefficients(5d);
+        armMotor.setTargetPositionTolerance(2);
         armMode = DcMotorEx.RunMode.RUN_USING_ENCODER;
 
         grabberServo = hardwareMap.get(Servo.class, "grabber_servo");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
-        leftFront.setDirection(Direction.FORWARD);
-        leftRear.setDirection(Direction.FORWARD);
-        rightFront.setDirection(Direction.REVERSE);
-        rightRear.setDirection(Direction.REVERSE);
+        leftFront.setDirection(Direction.REVERSE);
+        leftRear.setDirection(Direction.REVERSE);
+        rightFront.setDirection(Direction.FORWARD);
+        rightRear.setDirection(Direction.FORWARD);
+
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
 
         setDriveZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
 
@@ -116,6 +123,14 @@ public class Robot {
             armMotor.setMode(newMode);
             armMode = newMode;
         }
+    }
+
+    public void setArmTargetPosition(int newPosition) {
+        armMotor.setTargetPosition(newPosition);
+    }
+
+    public void setArmPower(double newPower) {
+        armMotor.setPower(newPower);
     }
 
     public void setGrabber(double newPosition) {
