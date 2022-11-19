@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.team15091.examples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import org.firstinspires.ftc.team15091.AutonomousBase;
 
 @Autonomous(name = "Blue side", group = "Example", preselectTeleOp="Gamepad")
+@Disabled
 public class AutonomousExample extends AutonomousBase {
 
     @Override

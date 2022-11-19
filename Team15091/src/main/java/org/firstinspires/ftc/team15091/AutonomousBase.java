@@ -14,12 +14,6 @@ public abstract class AutonomousBase extends OpModeBase {
         // Wait for the game to start (driver presses PLAY)
         // Abort this loop is started or stopped.
         while (!(isStarted() || isStopRequested())) {
-            if (gamepad1.a || gamepad2.a) {
-                if (!a_pressed) {
-                    // a is pressed
-                }
-            }
-
             if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 if (!dpad_pressed) {
                     delay_start += 100;
