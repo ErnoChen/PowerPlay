@@ -113,6 +113,8 @@ public class GamepadOpMode extends OpModeBase {
                     robot.rightFront.getVelocity(),
                     robot.leftRear.getVelocity(),
                     robot.rightRear.getVelocity());
+            telemetry.addData("Encoder Reset Mode:", isEncoderReset);
+            telemetry.addData("Lift Encoder:", "%d", robot.armMotor.getCurrentPosition());
 
             telemetry.update();
         }
