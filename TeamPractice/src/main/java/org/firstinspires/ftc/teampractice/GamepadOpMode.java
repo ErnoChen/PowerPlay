@@ -5,23 +5,24 @@ import com.qualcomm.hardware.lynx.LynxNackException;
 import com.qualcomm.hardware.lynx.commands.core.LynxResetMotorEncoderCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
-@TeleOp(name="Gamepad")
+@TeleOp(name = "Gamepad")
 public class GamepadOpMode extends LinearOpMode {
     static volatile boolean back_pressed, left_bumper_pressed = false, right_bumper_pressed = false;
-    static volatile boolean a_pressed = false;
-    static volatile boolean b_pressed = false;
     static volatile int cp;
+
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot();
         robot.init(hardwareMap, false);
-        int[] armStops = new int[]{0, 500, 820, 1160};
+        int[] armStops = new int[]{0, 950, 1600, 2280};
         int i = 0;
+        boolean autoArm = false;
 
         LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
 
@@ -42,6 +43,8 @@ public class GamepadOpMode extends LinearOpMode {
                         robot.armMotor.getCurrent(CurrentUnit.AMPS)));
         telemetry.addData("power", () ->
                 String.format("%.2f", robot.armMotor.getPower()));
+        telemetry.addData("limit",
+                String.format("%b", robot.limitSwitch.getState()));
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -50,23 +53,23 @@ public class GamepadOpMode extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             if (gamepad1.left_trigger > 0d) {
-                robot.armMotor.setTargetPosition(1250);
+                robot.setArmTargetPosition(2450);
                 robot.setArmMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-                robot.armMotor.setPower(gamepad1.left_trigger);
+                robot.setArmPower(gamepad1.left_trigger);
                 cp = robot.armMotor.getCurrentPosition();
-            } else if (gamepad1.right_trigger > 0d) {
-                robot.armMotor.setTargetPosition(0);
-                robot.setArmMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-                robot.armMotor.setPower(gamepad1.right_trigger);
+            } else if (gamepad1.right_trigger > 0d && robot.limitSwitch.getState() == true) {
+                robot.setArmMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+                robot.setArmPower(-gamepad1.right_trigger * (cp < 700 ? 0.4d: 1d));
                 cp = robot.armMotor.getCurrentPosition();
+                autoArm = false;
             } else {
-                if (gamepad1.back) {
-                    robot.setArmMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                    robot.armMotor.setPower(-0.4d);
+                if (autoArm == false && robot.limitSwitch.getState() == false) {
+                    cp = 0;
+                    robot.setArmMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 } else {
-                    robot.armMotor.setTargetPosition(cp);
+                    robot.setArmTargetPosition(cp);
                     robot.setArmMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-                    robot.armMotor.setPower(1d);
+                    robot.setArmPower(0.8d);
                 }
             }
 
@@ -74,26 +77,20 @@ public class GamepadOpMode extends LinearOpMode {
                 if (i < 3) {
                     i++;
                     cp = armStops[i];
+                    autoArm = true;
                 }
             }
 
             if (gamepad1.right_bumper && !right_bumper_pressed) {
                 i = 0;
-                cp = 0;
-            }
-
-            if (back_pressed && !gamepad1.back) {
-                try {
-                    new LynxResetMotorEncoderCommand(controlHub, liftMotorPort).send();
-                } catch (LynxNackException e) {
-                    e.printStackTrace();
-                }
+                cp = -100;
+                autoArm = false;
             }
 
             if (gamepad1.a) {
-                robot.setGrabber(1d);
-            } else if (gamepad1.b) {
                 robot.setGrabber(0d);
+            } else if (gamepad1.b) {
+                robot.setGrabber(1d);
             }
 
             double drive = Math.tan((-gamepad1.left_stick_y - gamepad1.right_stick_y) * Math.tan(1d));
@@ -110,9 +107,6 @@ public class GamepadOpMode extends LinearOpMode {
 
             left_bumper_pressed = gamepad1.left_bumper;
             right_bumper_pressed = gamepad1.right_bumper;
-            back_pressed = gamepad1.back;
-            a_pressed = gamepad1.a;
-            b_pressed = gamepad1.b;
 
             telemetry.update();
         }
